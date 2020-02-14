@@ -1,54 +1,55 @@
 const User = require("../models/user");
 
-const create_a_user = (req, res) => {
-  const user = new User();
+const create_a_user = async (req, res) => {
+  let user = new User();
   user.name = req.body.name;
 
-  user.save(function(err) {
-    if (err) res.send(err);
+  try {
+    await user.save();
+  } catch (err) {
+    await res.send(err);
+  }
 
-    res.json({ message: "User created!" });
-  });
+  res.json({ message: "User created!" });
 };
 
-const get_all_users = (req, res) => {
-  User.find((err, users) => {
-    if (err) res.send(err);
-    res.json(users);
-  });
+const get_all_users = async (req, res) => {
+  try {
+    users = await User.find();
+  } catch (err) {
+    await res.send(err);
+  }
+  res.json(users);
 };
 
-const get_one_user = (req, res) => {
-  User.findById(req.params.user_id, function(err, user) {
-    if (err) res.send(err);
-    res.json(user);
-  });
+const get_one_user = async (req, res) => {
+  try {
+    user = await User.findById(req.params.user_id);
+  } catch (err) {
+    await res.json(err);
+  }
+  res.json(user);
 };
 
-const update_user = (req, res) => {
-  User.findById(req.params.user_id, function(err, user) {
-    if (err) res.send(err);
+const update_user = async (req, res) => {
+  try {
+    user = await User.findById(req.params.user_id);
     user.name = req.body.name;
-
-    user.save(function(err) {
-      if (err) res.send(err);
-
-      res.json({ message: "User updated" });
-    });
-  });
+    user.save();
+  } catch (err) {
+    await res.json(err);
+  }
+  res.json({ message: "User updated" });
 };
 
-const delete_user = (req, res) => {
-  User.deleteOne(
-    {
-      _id: req.params.user_id
-    },
-    function(err) {
-      if (err) res.send(err);
+const delete_user = async (req, res) => {
+  try {
+    await User.deleteOne({ _id: req.params.user_id });
+  } catch (err) {
+    await res.json(err);
+  }
 
-      res.json({ message: "User successfully deleted!" });
-    }
-  );
+  res.json({ message: "User successfully deleted." });
 };
 
 module.exports = {
