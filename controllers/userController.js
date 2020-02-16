@@ -3,32 +3,28 @@ const User = require("../models/user");
 const create_a_user = async (req, res) => {
   let user = new User();
   user.name = req.body.name;
-
-  try {
-    await user.save();
-  } catch (err) {
-    await res.send(err);
-  }
-
-  res.json({ message: "User created!" });
+  await user
+    .save()
+    .then(() => res.json({ message: "User created!" }))
+    .catch(err => res.send(err));
 };
 
 const get_all_users = async (req, res) => {
   try {
     users = await User.find();
+    res.json(users);
   } catch (err) {
     await res.send(err);
   }
-  res.json(users);
 };
 
 const get_one_user = async (req, res) => {
   try {
     user = await User.findById(req.params.user_id);
+    res.json(user);
   } catch (err) {
     await res.json(err);
   }
-  res.json(user);
 };
 
 const update_user = async (req, res) => {
@@ -36,20 +32,19 @@ const update_user = async (req, res) => {
     user = await User.findById(req.params.user_id);
     user.name = req.body.name;
     user.save();
+    res.json({ message: "User updated" });
   } catch (err) {
     await res.json(err);
   }
-  res.json({ message: "User updated" });
 };
 
 const delete_user = async (req, res) => {
   try {
     await User.deleteOne({ _id: req.params.user_id });
+    res.json({ message: "User successfully deleted." });
   } catch (err) {
     await res.json(err);
   }
-
-  res.json({ message: "User successfully deleted." });
 };
 
 module.exports = {
